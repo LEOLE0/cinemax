@@ -1,24 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './Pages/Home';
+import Home2 from './Pages/Home2';
+import Home4 from './Pages/Home4';
+import Home5 from './Pages/Home5';
+import Home6 from './Pages/Home6';
+import Home7 from './Pages/Home7';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route exact path="/" element={<Home />} />
+        <Route exact path="/home2" element={<Home2 />} />
+        <Route exact path="/home4" element={<Home4 />} />
+        <Route exact path="/home5" element={<Home5 />} />
+        <Route exact path="/home6" element={<Home6 />} />
+        <Route exact path="/home7" element={<Home7 />} />
+      </Routes>
+    </Router>
   );
 }
 
