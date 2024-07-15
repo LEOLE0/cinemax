@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { Link } from 'react-router-dom';
+
 // Importer les affiches des films
 import premierePoster1 from "../Asset/movie&uuid=09F1A3AD-C127-4C59-8AF5-DD949E8FD405.avif";
 import premierePoster2 from "../Asset/movie&uuid=09F1A3AD-C127-4C59-8AF5-DD949E8FD405.avif";
@@ -64,7 +66,7 @@ const MovieGallery = styled.div`
   flex-wrap: wrap;
 `;
 
-const MoviePoster = styled.div`
+const MoviePoster = styled(Link)`
   width: 200px;
   height: 300px;
   background-image: url(${props => props.$poster});
@@ -74,6 +76,7 @@ const MoviePoster = styled.div`
   overflow: hidden;
   position: relative;
   transition: transform 0.5s ease, box-shadow 0.5s ease, filter 0.5s ease;
+  display: block;
 
   &:hover {
     transform: scale(1.1) rotate(5deg);
@@ -137,14 +140,14 @@ const PremiereSection = () => {
   }, []);
 
   const movies = [
-    { poster: premierePoster1, label: 'Avant-première', title: 'Moi, Moche et Méchant 4' },
-    { poster: premierePoster2, label: 'Avant-première', title: 'To the Moon' },
-    { poster: premierePoster3, label: '', title: 'Longlegs' },
-    { poster: premierePoster4, label: '', title: 'Creation of the Gods' },
-    { poster: premierePoster5, label: '', title: 'Le Ruban Blanc' },
-    { poster: premierePoster6, label: '', title: 'Spider-Man' },
-    { poster: premierePoster7, label: '', title: 'Indian 2 (version tamoul)' },
-    { poster: premierePoster8, label: '', title: 'Sarffira' },
+    { poster: premierePoster1, label: 'Avant-première', title: 'Moi, Moche et Méchant 4', link: '/film/1' },
+    { poster: premierePoster2, label: 'Avant-première', title: 'To the Moon', link: '/film/2' },
+    { poster: premierePoster3, label: '', title: 'Longlegs', link: '/film/3' },
+    { poster: premierePoster4, label: '', title: 'Creation of the Gods', link: '/film/4' },
+    { poster: premierePoster5, label: '', title: 'Le Ruban Blanc', link: '/film/5' },
+    { poster: premierePoster6, label: '', title: 'Spider-Man', link: '/film/6' },
+    { poster: premierePoster7, label: '', title: 'Indian 2 (version tamoul)', link: '/film/7' },
+    { poster: premierePoster8, label: '', title: 'Sarffira', link: '/film/8' },
   ];
 
   return (
@@ -156,14 +159,14 @@ const PremiereSection = () => {
       <MovieGallery>
         {movies.map((movie, index) => (
           <div key={index} data-aos="fade-up" data-aos-delay={`${(index + 1) * 100}`}>
-            <MoviePoster $poster={movie.poster}>
+            <MoviePoster to={movie.link} $poster={movie.poster}>
               {movie.label && <PosterLabel>{movie.label}</PosterLabel>}
             </MoviePoster>
             <MovieTitle>{movie.title}</MovieTitle>
           </div>
         ))}
       </MovieGallery>
-      <GlowButton href="#all-premieres">Toutes les avant-premières et préventes &gt;</GlowButton>
+      <GlowButton href="/premieres">Toutes les avant-premières et préventes &gt;</GlowButton>
     </Section>
   );
 };

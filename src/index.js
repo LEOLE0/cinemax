@@ -1,6 +1,8 @@
+// index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import { UserProvider } from './contexts/UserContext';
 import { createGlobalStyle } from 'styled-components';
 
 // Importer la police depuis Google Fonts
@@ -20,7 +22,9 @@ const GlobalStyle = createGlobalStyle`
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <GlobalStyle />
-    <App />
+    <UserProvider>
+      <GlobalStyle />
+      <App />
+    </UserProvider>
   </React.StrictMode>
 );

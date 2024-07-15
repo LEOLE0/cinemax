@@ -1,25 +1,17 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components';
+import { Link, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { auth } from '../firebase';
 import { UserContext } from '../contexts/UserContext';
 
-const backgroundAnimation = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-`;
-
 const FormContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(90deg, rgba(11, 15, 38, 1) 0%, rgba(33, 37, 55, 1) 100%);
-  animation: ${backgroundAnimation} 10s infinite alternate;
-  padding: 20px;
 `;
 
 const Form = styled.form`
@@ -27,7 +19,7 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 100%;
+  width: 90%;
   max-width: 500px;
   padding: 30px;
   background: rgba(255, 255, 255, 0.1);
@@ -41,7 +33,6 @@ const InputGroup = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
 `;
 
 const Icon = styled.div`
@@ -76,6 +67,10 @@ const Label = styled.label`
   color: #ffffff;
   align-self: flex-start;
   margin-bottom: 5px;
+  &:after {
+    content: " *";
+    color: red;
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -85,23 +80,42 @@ const ButtonContainer = styled.div`
   width: 100%;
 `;
 
-const StyledButton = styled.button`
-  background: ${({ bgColor }) => bgColor || 'transparent'};
-  color: ${({ textColor }) => textColor || '#ff9800'};
+const StyledButtonPrimary = styled.button`
+  background: ${({ bgColor }) => bgColor || '#ff9800'};
+  color: ${({ textColor }) => textColor || '#fff'};
   padding: ${({ padding }) => padding || '10px 20px'};
   font-size: ${({ fontSize }) => fontSize || '16px'};
-  border: 1px solid #ff9800;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
   width: ${({ width }) => width || 'auto'};
-  text-align: center;
 
   &:hover {
-    background: ${({ beforeBgColor }) => beforeBgColor || '#ff9800'};
-    color: #fff;
+    background: ${({ bgColor }) => bgColor || '#ff9800'};
     transform: scale(1.05);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: ${({ beforeBgColor }) => beforeBgColor || '#ff9800'};
+    transition: transform 0.3s ease;
+    z-index: -1;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  &:hover:before {
+    transform: scaleX(1);
   }
 `;
 
@@ -109,29 +123,6 @@ const ErrorMessage = styled.div`
   color: red;
   text-align: center;
   margin-top: -10px;
-`;
-
-const Tabs = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-`;
-
-const Tab = styled.button`
-  padding: 10px 20px;
-  cursor: pointer;
-  opacity: 0.6;
-  background: white;
-  border: none;
-  outline: none;
-  font-size: 28px;
-  font-weight: ${(props) => (props.active ? "bold" : "normal")};
-  color: rgba(11, 15, 38);
-  border-bottom: ${(props) => (props.active ? "4px solid darkblue" : "none")};
-
-  &:hover {
-    opacity: 1;
-  }
 `;
 
 function Connexion() {
@@ -160,30 +151,43 @@ function Connexion() {
   };
 
   return (
-    <>
-      
-      <FormContainer>
-        <Form onSubmit={handleSubmit}>
-          <Label htmlFor="email">Email</Label>
-          <InputGroup>
-            <Icon><FaEnvelope /></Icon>
-            <Input id="email" name="email" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </InputGroup>
+    <FormContainer>
+      <Form onSubmit={handleSubmit}>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        <Label htmlFor="email">Email</Label>
+        <InputGroup>
+          <Icon><FaEnvelope /></Icon>
+          <Input id="email" name="email" type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        </InputGroup>
 
-          <Label htmlFor="password">Mot de passe</Label>
-          <InputGroup>
-            <Icon><FaLock /></Icon>
-            <Input id="password" name="password" type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </InputGroup>
+        <Label htmlFor="password">Mot de passe</Label>
+        <InputGroup>
+          <Icon><FaLock /></Icon>
+          <Input id="password" name="password" type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        </InputGroup>
 
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-
-          <ButtonContainer>
-            <StyledButton type="submit">Connexion</StyledButton>
-          </ButtonContainer>
-        </Form>
-      </FormContainer>
-    </>
+        <ButtonContainer>
+          <StyledButtonPrimary 
+            bgColor="transparent" 
+            textColor="#ff9800" 
+            beforeBgColor="#ff9800"
+            padding="17px 5rem"
+            fontSize="13px"
+            width="50%"
+            type="submit">Connexion</StyledButtonPrimary>
+          <Link to="/" style={{ width: "50%", textDecoration: 'none' }}>
+            <StyledButtonPrimary 
+              bgColor="transparent" 
+              textColor="#ff9800" 
+              beforeBgColor="#ff9800"
+              padding="17px 5rem"
+              fontSize="13px"
+              width="100%"
+              type="button">Annuler</StyledButtonPrimary>
+          </Link>
+        </ButtonContainer>
+      </Form>
+    </FormContainer>
   );
 }
 

@@ -1,25 +1,18 @@
+// Inscription.js
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import styled from 'styled-components';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { FaUser, FaEnvelope, FaLock, FaPhone } from 'react-icons/fa';
 import { auth } from '../firebase';
 import { UserContext } from '../contexts/UserContext';
-
-const backgroundAnimation = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-`;
 
 const FormContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(90deg, rgba(11, 15, 38, 1) 0%, rgba(33, 37, 55, 1) 100%);
-  animation: ${backgroundAnimation} 10s infinite alternate;
-  padding: 20px;
 `;
 
 const Form = styled.form`
@@ -27,7 +20,7 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 100%;
+  width: 90%;
   max-width: 500px;
   padding: 30px;
   background: rgba(255, 255, 255, 0.1);
@@ -41,7 +34,6 @@ const InputGroup = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
 `;
 
 const Icon = styled.div`
@@ -76,6 +68,10 @@ const Label = styled.label`
   color: #ffffff;
   align-self: flex-start;
   margin-bottom: 5px;
+  &:after {
+    content: " *";
+    color: red;
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -85,46 +81,88 @@ const ButtonContainer = styled.div`
   width: 100%;
 `;
 
-const StyledButton = styled.button`
-  background: ${({ bgColor }) => bgColor || 'transparent'};
-  color: ${({ textColor }) => textColor || '#ff9800'};
-  padding: ${({ padding }) => padding || '10px 20px'};
-  font-size: ${({ fontSize }) => fontSize || '16px'};
-  border: 1px solid #ff9800;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
-  width: ${({ width }) => width || 'auto'};
-  text-align: center;
+const Row = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+`;
 
-  &:hover {
-    background: ${({ beforeBgColor }) => beforeBgColor || '#ff9800'};
-    color: #fff;
-    transform: scale(1.05);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+const HalfInputDiv = styled.div`
+  flex: 1;
+`;
+
+const ProgressBar = styled.div`
+  width: 100%;
+  height: 10px;
+  background: #ccc;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    display: block;
+    height: 100%;
+    width: ${(props) => props.progress}%;
+    background: #ff9800;
+    transition: width 0.3s ease;
   }
 `;
 
-const Tabs = styled.div`
+const PasswordStrength = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  margin-top: -10px;
   margin-bottom: 20px;
+  font-size: 0.8rem;
+  color: ${props => props.strengthColor};
 `;
 
-const Tab = styled.button`
-  padding: 10px 20px;
-  cursor: pointer;
-  opacity: 0.6;
-  background: white;
+const PasswordStrengthIndicator = styled.div`
+  width: 20%;
+  height: 5px;
+  background: ${props => props.strengthColor};
+  border-radius: 5px;
+  transition: all 0.3s;
+`;
+
+const StyledButtonPrimary = styled.button`
+  background: ${({ bgColor }) => bgColor || '#ff9800'};
+  color: ${({ textColor }) => textColor || '#fff'};
+  padding: ${({ padding }) => padding || '10px 20px'};
+  font-size: ${({ fontSize }) => fontSize || '16px'};
   border: none;
-  outline: none;
-  font-size: 28px;
-  font-weight: ${(props) => (props.active ? "bold" : "normal")};
-  color: rgba(11, 15, 38);
-  border-bottom: ${(props) => (props.active ? "4px solid darkblue" : "none")};
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  width: ${({ width }) => width || 'auto'};
 
   &:hover {
-    opacity: 1;
+    background: ${({ bgColor }) => bgColor || '#ff9800'};
+    transform: scale(1.05);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: ${({ beforeBgColor }) => beforeBgColor || '#ff9800'};
+    transition: transform 0.3s ease;
+    z-index: -1;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  &:hover:before {
+    transform: scaleX(1);
   }
 `;
 
@@ -139,10 +177,35 @@ function Inscription() {
     password: '',
     confirmPassword: ''
   });
+  const [progress, setProgress] = useState(0);
+  const [passwordStrength, setPasswordStrength] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    updateProgress();
+    if (name === 'password') {
+      checkPasswordStrength(value);
+    }
+  };
+
+  const updateProgress = () => {
+    const filledFields = Object.values(formData).filter(value => value.trim() !== '').length;
+    const totalFields = Object.keys(formData).length;
+    setProgress((filledFields / totalFields) * 100);
+  };
+
+  const checkPasswordStrength = (password) => {
+    let strength = 'faible';
+    let color = 'red';
+    if (password.length > 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)) {
+      strength = 'fort';
+      color = 'green';
+    } else if (password.length > 6 && /[A-Z]/.test(password)) {
+      strength = 'moyen';
+      color = 'orange';
+    }
+    setPasswordStrength({ strength, color });
   };
 
   const handleSubmit = async (e) => {
@@ -154,7 +217,7 @@ function Inscription() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       const user = userCredential.user;
-      await user.updateProfile({
+      await updateProfile(user, {
         displayName: `${formData.firstName} ${formData.lastName}`
       });
       setUser({
@@ -171,52 +234,81 @@ function Inscription() {
   };
 
   return (
-    <>
-     
-      <FormContainer>
-        <Form onSubmit={handleSubmit}>
-          <Label htmlFor="firstName">Prénom</Label>
-          <InputGroup>
-            <Icon><FaUser /></Icon>
-            <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="Prénom" required />
-          </InputGroup>
-          <Label htmlFor="lastName">Nom</Label>
-          <InputGroup>
-            <Icon><FaUser /></Icon>
-            <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Nom" required />
-          </InputGroup>
-          <Label htmlFor="phone">Numéro de téléphone</Label>
-          <InputGroup>
-            <Icon><FaPhone /></Icon>
-            <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} placeholder="Numéro de téléphone" required />
-          </InputGroup>
+    <FormContainer>
+      <Form onSubmit={handleSubmit}>
+        <ProgressBar progress={progress} />
+        <Row>
+          <HalfInputDiv>
+            <Label htmlFor="firstName">Prénom</Label>
+            <InputGroup>
+              <Icon><FaUser /></Icon>
+              <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
+            </InputGroup>
+          </HalfInputDiv>
+          <HalfInputDiv>
+            <Label htmlFor="lastName">Nom</Label>
+            <InputGroup>
+              <Icon><FaUser /></Icon>
+              <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
+            </InputGroup>
+          </HalfInputDiv>
+        </Row>
+        <Row>
+          <HalfInputDiv>
+            <Label htmlFor="phone">Numéro de téléphone</Label>
+            <InputGroup>
+              <Icon><FaPhone /></Icon>
+              <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} required />
+            </InputGroup>
+          </HalfInputDiv>
+        </Row>
+        <Label htmlFor="email">Email</Label>
+        <InputGroup>
+          <Icon><FaEnvelope /></Icon>
+          <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} required />
+        </InputGroup>
 
-          <Label htmlFor="email">Email</Label>
-          <InputGroup>
-            <Icon><FaEnvelope /></Icon>
-            <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="Email" required />
-          </InputGroup>
+        <Label htmlFor="password">Mot de passe</Label>
+        <InputGroup>
+          <Icon><FaLock /></Icon>
+          <Input id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} required />
+        </InputGroup>
+        <PasswordStrength strengthColor={passwordStrength.color}>
+          <PasswordStrengthIndicator strengthColor={passwordStrength.color} />
+          <PasswordStrengthIndicator strengthColor={passwordStrength.color} />
+          <PasswordStrengthIndicator strengthColor={passwordStrength.color} />
+          <PasswordStrengthIndicator strengthColor={passwordStrength.color} />
+          <PasswordStrengthIndicator strengthColor={passwordStrength.color} />
+        </PasswordStrength>
+        
+        <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+        <InputGroup>
+          <Icon><FaLock /></Icon>
+          <Input id="confirmPassword" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleInputChange} required />
+        </InputGroup>
 
-          <Label htmlFor="password">Mot de passe</Label>
-          <InputGroup>
-            <Icon><FaLock /></Icon>
-            <Input id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} placeholder="Mot de passe" required />
-          </InputGroup>
-          <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-          <InputGroup>
-            <Icon><FaLock /></Icon>
-            <Input id="confirmPassword" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleInputChange} placeholder="Confirmer le mot de passe" required />
-          </InputGroup>
-
-          <ButtonContainer>
-            <StyledButton type="submit">Inscription</StyledButton>
-            <Link to="/" style={{ width: "50%", textDecoration: 'none' }}>
-              <StyledButton type="button">Annuler</StyledButton>
-            </Link>
-          </ButtonContainer>
-        </Form>
-      </FormContainer>
-    </>
+        <ButtonContainer>
+          <StyledButtonPrimary 
+            bgColor="transparent" 
+            textColor="#ff9800" 
+            beforeBgColor="#ff9800"
+            padding="17px 5rem"
+            fontSize="13px"
+            width="50%"
+            type="submit">Inscription</StyledButtonPrimary>
+          <Link to="/" style={{ width: "50%", textDecoration: 'none' }}>
+            <StyledButtonPrimary 
+              bgColor="transparent" 
+              textColor="#ff9800" 
+              beforeBgColor="#ff9800"
+              padding="17px 5rem"
+              fontSize="13px"
+              width="100%"
+              type="button">Annuler</StyledButtonPrimary>
+          </Link>
+        </ButtonContainer>
+      </Form>
+    </FormContainer>
   );
 }
 

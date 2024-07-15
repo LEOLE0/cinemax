@@ -138,88 +138,7 @@ const GlowButton = styled.a`
   }
 `;
 
-const ParticleEffect = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
 
-  @keyframes move {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-100%);
-    }
-  }
-
-  .particle {
-    position: absolute;
-    bottom: -10px;
-    width: 10px;
-    height: 10px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    animation: move 5s linear infinite;
-  }
-
-  .particle:nth-child(1) {
-    left: 10%;
-    animation-duration: 5s;
-    animation-delay: 0s;
-  }
-
-  .particle:nth-child(2) {
-    left: 20%;
-    animation-duration: 7s;
-    animation-delay: 1s;
-  }
-
-  .particle:nth-child(3) {
-    left: 30%;
-    animation-duration: 6s;
-    animation-delay: 2s;
-  }
-
-  .particle:nth-child(4) {
-    left: 40%;
-    animation-duration: 8s;
-    animation-delay: 3s;
-  }
-
-  .particle:nth-child(5) {
-    left: 50%;
-    animation-duration: 6s;
-    animation-delay: 4s;
-  }
-
-  .particle:nth-child(6) {
-    left: 60%;
-    animation-duration: 7s;
-    animation-delay: 5s;
-  }
-
-  .particle:nth-child(7) {
-    left: 70%;
-    animation-duration: 5s;
-    animation-delay: 6s;
-  }
-
-  .particle:nth-child(8) {
-    left: 80%;
-    animation-duration: 6s;
-    animation-delay: 7s;
-  }
-
-  .particle:nth-child(9) {
-    left: 90%;
-    animation-duration: 8s;
-    animation-delay: 8s;
-  }
-`;
 
 const AdSection = () => {
   useEffect(() => {
@@ -233,11 +152,7 @@ const AdSection = () => {
         Your browser does not support the video tag.
       </VideoBackground>
       <Overlay />
-      <ParticleEffect>
-        {[...Array(9)].map((_, i) => (
-          <div key={i} className="particle"></div>
-        ))}
-      </ParticleEffect>
+      
       <ContentWrapper>
         <Title data-aos="fade-down">Découvrez notre nouvelle collection!</Title>
         <Content data-aos="fade-up">

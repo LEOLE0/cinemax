@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Inscription from './Inscription';
 import Connexion from './Connexion';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+
 
 const Tab = styled.button`
   padding: 10px 20px;
