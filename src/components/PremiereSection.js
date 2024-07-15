@@ -13,7 +13,7 @@ import premierePoster5 from "../assets/movie-img1.avif";
 import premierePoster6 from "../assets/movie-img1.avif";
 import premierePoster7 from "../assets/movie-img1.avif";
 import premierePoster8 from "../assets/movie-img1.avif";
-import backgroundImg from '../assets/kong.jpg';
+// import backgroundImg from '../assets/kong.jpg';
 
 const fadeIn = keyframes`
   from {
@@ -28,7 +28,7 @@ const fadeIn = keyframes`
 
 const Section = styled.section`
   padding: 150px 72.5px;
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url(${props => props.$backgroundImage}) center/cover no-repeat;
+  background: linear-gradient(135deg, #111 30%, #222 100%);
   color: #fff;
   text-align: center;
   font-family: 'Poppins', sans-serif;
@@ -151,7 +151,7 @@ const PremiereSection = () => {
   ];
 
   return (
-    <Section $backgroundImage={backgroundImg}>
+    <Section >
       <Title data-aos="fade-up" data-aos-delay="800">Avant-premières et préventes</Title>
       <Subtitle data-aos="fade-down" data-aos-delay="800">
         Découvrez les avant-premières et les nouveautés en exclusivité !

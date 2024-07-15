@@ -5,7 +5,7 @@ import MainBanner from '../components/MainBanner';
 import BookingSection from '../components/BookingSection';
 import FeaturedMovies from '../components/FeaturedMovies';
 import PremiereSection from '../components/PremiereSection';
-import AdSection from '../components/AdSection';
+import AdSection from '../components/ReservationForm';
 import HelpCenter from '../components/HelpCenter';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';

@@ -157,16 +157,16 @@ const HelpCenter = () => {
 
   const faqs = [
     {
-      question: "Quelles sont les expériences proposées par les cinémas Pathé ?",
-      answer: "Les cinémas Pathé proposent des expériences variées telles que la 4DX, IMAX, et ScreenX pour une immersion totale."
+      question: "Quelles sont les expériences proposées par CINEMAX ?",
+      answer: "Les cinémax proposent des expériences variées telles que la 4DX, IMAX, et ScreenX pour une immersion totale."
     },
     {
-      question: "Comment puis-je m'abonner au CinéPass ?",
-      answer: "Pour vous abonner au CinéPass, vous pouvez visiter notre site web et choisir l'option d'abonnement qui vous convient."
+      question: "Comment puis-je m'abonner au MaxPass ?",
+      answer: "Pour vous abonner au MaxPass, vous pouvez visiter notre site web et choisir l'option d'abonnement qui vous convient."
     },
     {
-      question: "Comment puis-je acheter une CinéCarte 5 places ?",
-      answer: "Vous pouvez acheter une CinéCarte 5 places en ligne sur notre site web ou directement dans nos cinémas."
+      question: "Comment puis-je acheter une MaxCarte 5 places ?",
+      answer: "Vous pouvez acheter une MaxCarte 5 places en ligne sur notre site web ou directement dans nos cinémas."
     }
   ];
 

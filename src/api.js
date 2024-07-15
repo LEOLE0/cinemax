@@ -92,7 +92,7 @@ export const removeFavorite = async (film_id) => {
 // Ajout des nouvelles fonctions pour les réservations
 export const getReservations = async () => {
   try {
-    const response = await api.get('/reservations');
+    const response = await api.get('/reservation');
     return response.data;
   } catch (error) {
     console.error('Erreur lors de la récupération des réservations:', error);
@@ -102,7 +102,7 @@ export const getReservations = async () => {
 
 export const addReservation = async (reservationData) => {
   try {
-    const response = await api.post('/reservations', reservationData);
+    const response = await api.post('/reservation', reservationData);
     return response.data;
   } catch (error) {
     console.error('Erreur lors de l\'ajout de la réservation:', error);
@@ -127,6 +127,17 @@ export const updateProfile = async (userData) => {
     return response.data;
   } catch (error) {
     console.error('Erreur lors de la mise à jour du profil:', error);
+    throw error;
+  }
+};
+
+// Récupérer les salles
+export const getSalles = async () => {
+  try {
+    const response = await api.get('/salles');
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des salles:', error);
     throw error;
   }
 };

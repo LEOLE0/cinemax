@@ -63,12 +63,12 @@ app.post('/api/register', [
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { nom, email, password } = req.body; // Utilisation de "nom" au lieu de "nom_utilisateur"
+  const { nom, email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   const query = 'INSERT INTO public.utilisateur (nom_utilisateur, email, password) VALUES ($1, $2, $3) RETURNING *';
   try {
-    const result = await pool.query(query, [nom, email, hashedPassword]); // Adaptation des valeurs à la requête SQL
+    const result = await pool.query(query, [nom, email, hashedPassword]);
     const token = jwt.sign({ id: result.rows[0].utilisateur_id }, secretKey, { expiresIn: '1h' });
     res.status(201).json({ token, user: result.rows[0] });
   } catch (err) {
@@ -105,7 +105,7 @@ app.post('/api/login', async (req, res) => {
 // Route pour récupérer le profil utilisateur complet
 app.get('/api/profile', authenticateToken, async (req, res) => {
   try {
-    console.log('ID de l\'utilisateur:', req.user.id); // Log de l'ID utilisateur
+    console.log('ID de l\'utilisateur:', req.user.id);
     const query = 'SELECT utilisateur_id, nom_utilisateur, email FROM public.utilisateur WHERE utilisateur_id = $1';
     const result = await pool.query(query, [req.user.id]);
 
@@ -114,7 +114,7 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
     }
 
     const user = result.rows[0];
-    console.log('Données utilisateur:', user); // Log des données utilisateur
+    console.log('Données utilisateur:', user);
     res.json({ user });
   } catch (err) {
     console.error('Erreur lors de la récupération du profil:', err.message);
@@ -122,15 +122,24 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// Exemple de route pour récupérer les films
-app.get('/api/film', async (req, res) => {
+// Route pour récupérer les films
+app.get('/api/films', async (req, res) => {
   try {
-    console.log('Requête reçue pour /api/film');
-    const result = await pool.query('SELECT * FROM public.film ORDER BY film_id ASC');
-    console.log('Résultats de la requête:', result.rows);
+    const result = await pool.query('SELECT film_id, titre FROM public.film');
     res.json(result.rows);
   } catch (err) {
     console.error('Erreur lors de la récupération des films:', err.message);
+    res.status(500).send('Erreur du serveur');
+  }
+});
+
+// Route pour récupérer les salles
+app.get('/api/salles', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT salle_id, nom_salle FROM public.salle');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Erreur lors de la récupération des salles:', err.message);
     res.status(500).send('Erreur du serveur');
   }
 });
@@ -181,15 +190,28 @@ app.delete('/api/favorites/:film_id', authenticateToken, async (req, res) => {
   }
 });
 
-// Route pour récupérer les réservations de l'utilisateur
-app.get('/api/reservations', authenticateToken, async (req, res) => {
+// Route pour ajouter une réservation
+app.post('/api/reservation', authenticateToken, async (req, res) => {
+  const { nom, film, salle, horaire } = req.body;
+  const utilisateur_id = req.user.id;
+
   try {
     const result = await pool.query(
-      `SELECT r.*, f.titre FROM public.reservation r
-       JOIN public.film f ON r.film_id = f.film_id
-       WHERE r.utilisateur_id = $1`,
-      [req.user.id]
+      'INSERT INTO reservation (utilisateur_id, film_id, salle_id, horaire) VALUES ($1, $2, $3, $4) RETURNING *',
+      [utilisateur_id, film, salle, horaire]
     );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Erreur lors de l\'ajout de la réservation:', err);
+    res.status(500).send('Erreur du serveur');
+  }
+});
+
+// Route pour récupérer les réservations d'un utilisateur
+app.get('/api/reservation', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const result = await pool.query('SELECT * FROM reservation WHERE utilisateur_id = $1', [userId]);
     res.json(result.rows);
   } catch (err) {
     console.error('Erreur lors de la récupération des réservations:', err.message);
@@ -197,23 +219,8 @@ app.get('/api/reservations', authenticateToken, async (req, res) => {
   }
 });
 
-// Route pour ajouter une réservation
-app.post('/api/reservations', authenticateToken, async (req, res) => {
-  const { film_id, salle_id, horaire } = req.body;
-  try {
-    await pool.query(
-      'INSERT INTO public.reservation (utilisateur_id, film_id, salle_id, horaire) VALUES ($1, $2, $3, $4)',
-      [req.user.id, film_id, salle_id, horaire]
-    );
-    res.status(201).send('Réservation ajoutée');
-  } catch (err) {
-    console.error('Erreur lors de l\'ajout de la réservation:', err.message);
-    res.status(500).send('Erreur du serveur');
-  }
-});
-
 // Route pour supprimer une réservation
-app.delete('/api/reservations/:reservation_id', authenticateToken, async (req, res) => {
+app.delete('/api/reservation/:reservation_id', authenticateToken, async (req, res) => {
   const { reservation_id } = req.params;
   try {
     await pool.query(
@@ -261,10 +268,10 @@ app.put('/api/profile', authenticateToken, [
     return res.status(400).json({ message: 'Aucune donnée à mettre à jour' });
   }
 
-  values.push(req.user.id); // Ajout de l'ID de l'utilisateur à la fin des valeurs
+  values.push(req.user.id);
 
   const query = `UPDATE public.utilisateur SET ${updates.join(', ')} WHERE utilisateur_id = $${values.length} RETURNING *`;
-  
+
   try {
     const result = await pool.query(query, values);
     res.json(result.rows[0]);

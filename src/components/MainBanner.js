@@ -1,7 +1,7 @@
 // src/components/MainBanner.js
 import React from 'react';
 import styled from 'styled-components';
-import bannerImage from '../assets/venom.jpg'; // Assurez-vous de fournir le bon chemin vers votre image
+import bannerImage from '../assets/banner.avif'; // Assurez-vous de fournir le bon chemin vers votre image
 
 const BannerContainer = styled.div`
   position: relative;

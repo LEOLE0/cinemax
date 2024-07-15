@@ -1,4 +1,3 @@
-// src/pages/Profile.js
 import React, { useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -14,32 +13,29 @@ import {
 import { AuthContext } from "../context/AuthContext";
 
 const PageContainer = styled.div`
-background: url(${props => props.$backgroundImage}) center/cover no-repeat;
+  background: url(${props => props.$backgroundImage}) center/cover no-repeat;
   display: flex;
   flex-direction: column;
   align-items: center;
-  
   min-height: 100vh;
   padding-top: 170px;
-  
 `;
 
 const DashboardContainer = styled.div`
-  background: rgba(255, 255, 255, 0.6); /* Transparence */
-  backdrop-filter: blur(9px); /* Effet de flou */
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(9px);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 50px;
   width: 80vw;
   height: 80vh;
-  margin-bottom: 100px; /* Ajout d'un espace entre le dashboard et le footer */
+  margin-bottom: 100px;
 `;
-
 
 const Title = styled.h2`
   font-size: 2rem;
   margin-bottom: 90px;
-  color: rgba(11, 15, 38, 1);;
+  color: rgba(11, 15, 38, 1);
 `;
 
 const Tabs = styled.div`
@@ -56,8 +52,6 @@ const Tab = styled.div`
   color: ${(props) => (props.active ? "#fff" : "#FFFFFF")};
   font-weight: ${(props) => (props.active ? "bold" : "normal")};
   margin-bottom: 80px;
-  
-  
 `;
 
 const ProfileItem = styled.div`
@@ -69,7 +63,7 @@ const ProfileItem = styled.div`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 230px;
+  margin-top: 100px;
 `;
 
 const LogoutButton = styled.button`
@@ -108,6 +102,18 @@ const EditButton = styled.button`
   }
 `;
 
+const ReservationsList = styled.ul`
+  list-style: none;
+  padding: 0;
+`;
+
+const ReservationItem = styled.li`
+  background: #f9f9f9;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+`;
+
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [profile, setProfile] = useState(null);
@@ -141,8 +147,8 @@ const Profile = () => {
 
     const fetchReservations = async () => {
       try {
-        const reservationsData = await getReservations();
-        setReservations(reservationsData);
+        const reservationData = await getReservations();
+        setReservations(reservationData);
       } catch (error) {
         console.error(
           "Erreur lors de la récupération des réservations:",
@@ -210,8 +216,8 @@ const Profile = () => {
             Mon profil
           </Tab>
           <Tab
-            active={activeTab === "reservations"}
-            onClick={() => setActiveTab("reservations")}
+            active={activeTab === "reservation"}
+            onClick={() => setActiveTab("reservation")}
           >
             Mes réservations
           </Tab>
@@ -278,21 +284,25 @@ const Profile = () => {
             )}
           </div>
         )}
-        {activeTab === "reservations" && (
+        {activeTab === "reservation" && (
           <div>
             <h3>Mes réservations</h3>
             {reservations.length === 0 ? (
               <p>Vous n'avez aucune réservation.</p>
             ) : (
-              <ul>
+              <ReservationsList>
                 {reservations.map((reservation) => (
-                  <li key={reservation.id}>{reservation.details}</li>
+                  <ReservationItem key={reservation.reservation_id}>
+                    <p><strong>Film:</strong> {reservation.film}</p>
+                    <p><strong>Salle:</strong> {reservation.salle}</p>
+                    <p><strong>Horaire:</strong> {reservation.horaire}</p>
+                  </ReservationItem>
                 ))}
-              </ul>
+              </ReservationsList>
             )}
           </div>
         )}
-        {activeTab === "favorites" && (
+                {activeTab === "favorites" && (
           <div>
             <h3>Ma watchlist</h3>
             {favorites.length === 0 ? (
@@ -313,3 +323,4 @@ const Profile = () => {
 };
 
 export default Profile;
+         
