@@ -1,19 +1,18 @@
-// src/components/PremiereSection.js
 import React, { useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { FaHeart } from 'react-icons/fa'; // Importation de l'icône de cœur
 
 // Importer les affiches des films
-import premierePoster1 from "../assets/movie-img1.avif";
-import premierePoster2 from "../assets/movie-img1.avif";
-import premierePoster3 from "../assets/movie-img1.avif";
-import premierePoster4 from "../assets/movie-img1.avif";
-import premierePoster5 from "../assets/movie-img1.avif";
-import premierePoster6 from "../assets/movie-img1.avif";
-import premierePoster7 from "../assets/movie-img1.avif";
+import premierePoster1 from "../assets/movie-img2.webp";
+import premierePoster2 from "../assets/movie-img3.avif";
+import premierePoster3 from "../assets/movie-img4.avif";
+import premierePoster4 from "../assets/movie-img5.avif";
+import premierePoster5 from "../assets/movie-img6.avif";
+import premierePoster6 from "../assets/movie-img7.avif";
+import premierePoster7 from "../assets/movie-img8.jpeg";
 import premierePoster8 from "../assets/movie-img1.avif";
-// import backgroundImg from '../assets/kong.jpg';
 
 const fadeIn = keyframes`
   from {
@@ -27,11 +26,18 @@ const fadeIn = keyframes`
 `;
 
 const Section = styled.section`
-  padding: 150px 72.5px;
+  width: 100%;
+  padding: 150px 0;
   background: linear-gradient(135deg, #111 30%, #222 100%);
   color: #fff;
   text-align: center;
   font-family: 'Poppins', sans-serif;
+`;
+
+const Container = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 `;
 
 const Title = styled.h2`
@@ -41,6 +47,7 @@ const Title = styled.h2`
   text-transform: uppercase;
   transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
   animation: ${fadeIn} 0.8s ease-in-out;
+  
 
   &:hover {
     transform: scale(1.05);
@@ -61,10 +68,9 @@ const Subtitle = styled.p`
 `;
 
 const MovieGallery = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 25px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 85px;
 `;
 
 const MoviePoster = styled.div`
@@ -92,7 +98,7 @@ const MoviePoster = styled.div`
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(1px);
   }
 `;
 
@@ -110,9 +116,42 @@ const PosterLabel = styled.div`
 `;
 
 const MovieTitle = styled.p`
-  margin-top: 15px;
-  font-size: 16px;
-  font-weight: 500;
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 100;
+  
+`;
+
+const HeartButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 0, 0, 0.7);
+    svg {
+      color: #ff0000;
+    }
+  }
+
+  &:active {
+    transform: scale(1.1);
+  }
+
+  svg {
+    color: #333;
+    font-size: 18px;
+  }
 `;
 
 const GlowButton = styled.a`
@@ -120,9 +159,9 @@ const GlowButton = styled.a`
   display: inline-block;
   background-color: #ff9800;
   color: #fff;
-  padding: 10px 20px;
+  padding: 12px 40px;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 18px;
   text-decoration: none;
   transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 0 10px rgba(0, 123, 255, 0.7);
@@ -145,28 +184,52 @@ const PremiereSection = () => {
     { poster: premierePoster3, label: '', title: 'Longlegs' },
     { poster: premierePoster4, label: '', title: 'Creation of the Gods' },
     { poster: premierePoster5, label: '', title: 'Le Ruban Blanc' },
-    { poster: premierePoster6, label: '', title: 'Spider-Man' },
-    { poster: premierePoster7, label: '', title: 'Indian 2 (version tamoul)' },
-    { poster: premierePoster8, label: '', title: 'Sarffira' },
+    { poster: premierePoster6, label: '', title: 'Elyas' },
+    { poster: premierePoster7, label: '', title: 'Deadpool X Wolwerine' },
+    { poster: premierePoster8, label: '', title: 'Bad Boys' },
   ];
 
+  const addToWatchlist = (filmId) => {
+    fetch('http://localhost:5001/api/watchlist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+      },
+      body: JSON.stringify({ film_id: filmId }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Film ajouté à la watchlist');
+        } else {
+          console.error('Erreur lors de l\'ajout du film à la watchlist');
+        }
+      })
+      .catch((error) => console.error('Erreur lors de l\'ajout du film à la watchlist:', error));
+  };
+
   return (
-    <Section >
-      <Title data-aos="fade-up" data-aos-delay="800">Avant-premières et préventes</Title>
-      <Subtitle data-aos="fade-down" data-aos-delay="800">
-        Découvrez les avant-premières et les nouveautés en exclusivité !
-      </Subtitle>
-      <MovieGallery>
-        {movies.map((movie, index) => (
-          <div key={index} data-aos="fade-up" data-aos-delay={`${(index + 1) * 100}`}>
-            <MoviePoster $poster={movie.poster}>
-              {movie.label && <PosterLabel>{movie.label}</PosterLabel>}
-            </MoviePoster>
-            <MovieTitle>{movie.title}</MovieTitle>
-          </div>
-        ))}
-      </MovieGallery>
-      <GlowButton href="#all-premieres">Toutes les avant-premières et préventes &gt;</GlowButton>
+    <Section>
+      <Container>
+        <Title data-aos="fade-up" data-aos-delay="800">Avant-premières et préventes</Title>
+        <Subtitle data-aos="fade-down" data-aos-delay="800">
+          Découvrez les avant-premières et les nouveautés en exclusivité !
+        </Subtitle>
+        <MovieGallery>
+          {movies.map((movie, index) => (
+            <div key={index} data-aos="fade-up" data-aos-delay={`${(index + 1) * 100}`}>
+              <MoviePoster $poster={movie.poster}>
+                {movie.label && <PosterLabel>{movie.label}</PosterLabel>}
+                <HeartButton onClick={() => addToWatchlist(index + 1)}>
+                  <FaHeart />
+                </HeartButton>
+              </MoviePoster>
+              <MovieTitle>{movie.title}</MovieTitle>
+            </div>
+          ))}
+        </MovieGallery>
+        <GlowButton href="/PremierePage">Toutes les avant-premières et préventes &gt;</GlowButton>
+      </Container>
     </Section>
   );
 };

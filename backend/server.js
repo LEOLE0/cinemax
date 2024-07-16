@@ -160,17 +160,19 @@ app.get('/api/favorites', authenticateToken, async (req, res) => {
   }
 });
 
-// Route pour ajouter un film aux favoris
-app.post('/api/favorites', authenticateToken, async (req, res) => {
+// Route pour ajouter un film à la watchlist
+app.post('/api/watchlist', authenticateToken, async (req, res) => {
   const { film_id } = req.body;
+  const utilisateur_id = req.user.id;
+
   try {
-    await pool.query(
-      'INSERT INTO public.favoris (utilisateur_id, film_id) VALUES ($1, $2)',
-      [req.user.id, film_id]
+    const result = await pool.query(
+      'INSERT INTO watchlist (utilisateur_id, film_id) VALUES ($1, $2) RETURNING *',
+      [utilisateur_id, film_id]
     );
-    res.status(201).send('Film ajouté aux favoris');
+    res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error('Erreur lors de l\'ajout aux favoris:', err.message);
+    console.error('Erreur lors de l\'ajout à la watchlist:', err);
     res.status(500).send('Erreur du serveur');
   }
 });
@@ -197,7 +199,7 @@ app.post('/api/reservation', authenticateToken, async (req, res) => {
 
   try {
     const result = await pool.query(
-      'INSERT INTO reservation (utilisateur_id, film_id, salle_id, horaire) VALUES ($1, $2, $3, $4) RETURNING *',
+      'INSERT INTO public.reservation (utilisateur_id, film_id, salle_id, horaire) VALUES ($1, $2, $3, $4) RETURNING *',
       [utilisateur_id, film, salle, horaire]
     );
     res.status(201).json(result.rows[0]);

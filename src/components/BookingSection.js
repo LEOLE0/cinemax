@@ -143,7 +143,6 @@ const MapWrapper = styled.div`
   position: relative;
   height: 100%;
   width: 100%;
-  
 `;
 
 const BookingSection = () => {
@@ -162,10 +161,19 @@ const BookingSection = () => {
     setModalIsOpen(false);
   };
 
+  const scrollToReservationForm = () => {
+    const reservationForm = document.getElementById('reservationForm');
+    if (reservationForm) {
+      reservationForm.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      console.error("L'élément avec l'ID 'reservationForm' est introuvable.");
+    }
+  };
+
   return (
     <BookingContainer>
       <TopSection>
-        <BookNowButton onClick={() => document.getElementById('adSection').scrollIntoView()}>
+        <BookNowButton onClick={scrollToReservationForm}>
           <FaTicketAlt />
           Réserver maintenant
         </BookNowButton>

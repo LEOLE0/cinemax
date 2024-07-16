@@ -4,76 +4,134 @@ import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
 
 const FormContainer = styled.div`
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(105deg, #111 10%, #002 60%);
+  padding: 40px;
+  width: 60vw;
+  margin: 90px auto;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  padding: 20px;
-  width: 70%;
-  margin: 50px auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 `;
 
 const FormTitle = styled.h2`
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  color: #fff;
+  font-size: 2rem;
 `;
 
 const FormField = styled.div`
-  margin-bottom: 15px;
+  margin-bottom: 50px;
 `;
 
 const Label = styled.label`
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.5rem;
 `;
 
 const Input = styled.input`
+  background: #cfcfcf;
   width: 100%;
   padding: 10px;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
 `;
 
-const Select = styled.select`
-  width: 100%;
-  padding: 10px;
+const SelectContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+`;
+
+const SelectCard = styled.div`
+  background: #757575;
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 30px;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  width: 30%;
+  margin: 10px 0;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    background-color: #ff9900;
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  &.selected {
+    background-color: #ff9900;
+    color: #fff;
+  }
+`;
+
+const TimeContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+`;
+
+const TimeCard = styled.div`
+  background: #757575;
+  color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 22%;
+  margin: 10px 0;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    background-color: #ff9900;
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  &.selected {
+    background-color: #ff9900;
+    color: #fff;
+  }
 `;
 
 const SubmitButton = styled.button`
-  background-color: #007bff;
+  background-color: #ff9900; 
   color: #fff;
-  padding: 12px 20px;
+  padding: 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
+  width: 20vw;
   transition: background-color 0.3s ease, transform 0.3s ease;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #ff9900;
     transform: translateY(-2px);
   }
 `;
 
 const ModalContent = styled.div`
-  
-  
+  background-color: #c9c9c9;
+  height: 76vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  height: 100%;
-  justify-content: space-between;
   padding: 50px;
-
 `;
 
 const ModalButtons = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   width: 100%;
+  margin-top: 6%;
 `;
 
 const ModalButton = styled.button`
@@ -94,7 +152,8 @@ const ModalButton = styled.button`
 `;
 
 const RecapItem = styled.p`
-  margin: 35px 0;
+  margin: 50px 0;
+  font-size: 1.4rem;
 `;
 
 const ReservationForm = () => {
@@ -106,6 +165,7 @@ const ReservationForm = () => {
   });
   const [films, setFilms] = useState([]);
   const [salles, setSalles] = useState([]);
+  const [horaires] = useState(['10:00', '14:00', '18:00', '21:00', '23:45']);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [recapData, setRecapData] = useState(null);
 
@@ -125,8 +185,7 @@ const ReservationForm = () => {
       .catch((error) => console.error('Error fetching salles:', error));
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleSelect = (name, value) => {
     setFormData({
       ...formData,
       [name]: value,
@@ -141,6 +200,12 @@ const ReservationForm = () => {
 
   const closeModal = () => {
     setModalIsOpen(false);
+    setFormData({
+      nom: '',
+      film: '',
+      salle: '',
+      horaire: '',
+    });
   };
 
   const handleConfirm = async () => {
@@ -154,7 +219,13 @@ const ReservationForm = () => {
         body: JSON.stringify(formData),
       });
       if (response.ok) {
-        closeModal();
+        setModalIsOpen(false);
+        setFormData({
+          nom: '',
+          film: '',
+          salle: '',
+          horaire: '',
+        }); // Réinitialiser le formulaire
         navigate('/profile'); // Redirige vers le profil après la soumission
       } else {
         console.error('Erreur lors de la soumission du formulaire');
@@ -166,7 +237,7 @@ const ReservationForm = () => {
 
   return (
     <FormContainer>
-      <FormTitle>Formulaire de Réservation</FormTitle>
+      <FormTitle>Réservez votre Séance MAX</FormTitle>
       <form onSubmit={handleSubmit}>
         <FormField>
           <Label htmlFor="nom">Nom</Label>
@@ -175,62 +246,53 @@ const ReservationForm = () => {
             id="nom"
             name="nom"
             value={formData.nom}
-            onChange={handleChange}
+            onChange={(e) => handleSelect('nom', e.target.value)}
             required
           />
         </FormField>
         <FormField>
-          <Label htmlFor="film">Film</Label>
-          <Select
-            id="film"
-            name="film"
-            value={formData.film}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Sélectionnez un film</option>
+          <Label>Film</Label>
+          <SelectContainer>
             {films.map((film) => (
-              <option key={film.film_id} value={film.film_id}>
+              <SelectCard
+                key={film.film_id}
+                className={formData.film === film.film_id ? 'selected' : ''}
+                onClick={() => handleSelect('film', film.film_id)}
+              >
                 {film.titre}
-              </option>
+              </SelectCard>
             ))}
-          </Select>
+          </SelectContainer>
         </FormField>
         <FormField>
-          <Label htmlFor="salle">Salle</Label>
-          <Select
-            id="salle"
-            name="salle"
-            value={formData.salle}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Sélectionnez une salle</option>
+          <Label>Salle</Label>
+          <SelectContainer>
             {salles.map((salle) => (
-              <option key={salle.salle_id} value={salle.salle_id}>
+              <SelectCard
+                key={salle.salle_id}
+                className={formData.salle === salle.salle_id ? 'selected' : ''}
+                onClick={() => handleSelect('salle', salle.salle_id)}
+              >
                 {salle.nom_salle}
-              </option>
+              </SelectCard>
             ))}
-          </Select>
+          </SelectContainer>
         </FormField>
         <FormField>
-          <Label htmlFor="horaire">Horaire</Label>
-          <Select
-            id="horaire"
-            name="horaire"
-            value={formData.horaire}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Sélectionnez un horaire</option>
-            <option value="10:00">10:00</option>
-            <option value="14:00">14:00</option>
-            <option value="18:00">18:00</option>
-            <option value="21:00">21:00</option>
-            <option value="23:45">23:45</option>
-          </Select>
+          <Label>Horaire</Label>
+          <TimeContainer>
+            {horaires.map((horaire) => (
+              <TimeCard
+                key={horaire}
+                className={formData.horaire === horaire ? 'selected' : ''}
+                onClick={() => handleSelect('horaire', horaire)}
+              >
+                {horaire}
+              </TimeCard>
+            ))}
+          </TimeContainer>
         </FormField>
-        <SubmitButton type="submit">Réserver</SubmitButton>
+        <SubmitButton type="submit">Réserver maintenant</SubmitButton>
       </form>
 
       <Modal
@@ -259,21 +321,21 @@ const ReservationForm = () => {
         contentLabel="Récapitulatif de Réservation"
       >
         {recapData && (
-  <ModalContent>
-    <div>
-      <h2>Récapitulatif de la Réservation</h2>
-      <RecapItem><strong>Nom:</strong> {recapData.nom}</RecapItem>
-      <RecapItem><strong>Film:</strong> {films.find(film => film.film_id === parseInt(recapData.film))?.titre}</RecapItem>
-      <RecapItem><strong>Salle:</strong> {salles.find(salle => salle.salle_id === parseInt(recapData.salle))?.nom_salle}</RecapItem>
-      <RecapItem><strong>Horaire:</strong> {recapData.horaire}</RecapItem>
-      <RecapItem><strong>Prix:</strong> 10.00 €</RecapItem>
-    </div>
-    <ModalButtons>
-      <ModalButton onClick={handleConfirm}>Payer</ModalButton>
-      <ModalButton onClick={closeModal}>Annuler</ModalButton>
-    </ModalButtons>
-  </ModalContent>
-)}
+          <ModalContent>
+            <div>
+              <h2>Récapitulatif de la Réservation</h2>
+              <RecapItem><strong>Nom:</strong> {recapData.nom}</RecapItem>
+              <RecapItem><strong>Film:</strong> {films.find(film => film.film_id === parseInt(recapData.film))?.titre}</RecapItem>
+              <RecapItem><strong>Salle:</strong> {salles.find(salle => salle.salle_id === parseInt(recapData.salle))?.nom_salle}</RecapItem>
+              <RecapItem><strong>Horaire:</strong> {recapData.horaire}</RecapItem>
+              <RecapItem><strong>Prix:</strong> 10.00 €</RecapItem>
+            </div>
+            <ModalButtons>
+              <ModalButton onClick={handleConfirm}>Payer</ModalButton>
+              <ModalButton onClick={closeModal}>Annuler</ModalButton>
+            </ModalButtons>
+          </ModalContent>
+        )}
       </Modal>
     </FormContainer>
   );

@@ -1,12 +1,12 @@
-// src/components/FeaturedMovies.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { FaInfoCircle } from 'react-icons/fa';
+import { FaHeart } from 'react-icons/fa';
 import movieImage1 from '../assets/movie-img1.avif';
-import movieImage2 from '../assets/movie-img1.avif';
-import movieImage3 from '../assets/movie-img1.avif';
-import movieImage4 from '../assets/movie-img1.avif';
-import backgroundImg from '../assets/darkvador.jpg'; // Assurez-vous de fournir le bon chemin vers votre image de fond
+import movieImage2 from '../assets/movie-img2.webp';
+import movieImage3 from '../assets/movie-img3.avif';
+import movieImage4 from '../assets/movie-img4.avif';
+import backgroundImg from '../assets/darkvador.jpg';
 
 const fadeIn = keyframes`
   from {
@@ -22,15 +22,15 @@ const fadeIn = keyframes`
 const Section = styled.div`
   position: relative;
   width: 100%;
-  height: 100vh; /* Ajustez cette valeur pour réduire la hauteur de la section */
+  height: 100vh;
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url(${props => props.$backgroundImage}) center/cover no-repeat;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px 0; /* Ajustez le padding pour remonter le titre */
+  padding: 20px 0;
   font-family: 'Poppins', sans-serif;
-  overflow: hidden; /* Assurez-vous que les éléments ne débordent pas */
+  overflow: hidden;
 `;
 
 const Gallery = styled.div`
@@ -38,13 +38,13 @@ const Gallery = styled.div`
   justify-content: center;
   align-items: center;
   perspective: 1200px;
-  gap: 20px; /* Espace entre les affiches */
+  gap: 20px;
   animation: ${fadeIn} 1s ease-in-out;
 `;
 
 const Poster = styled.div`
-  width: 200px; /* Réduire la largeur des affiches */
-  height: 300px; /* Réduire la hauteur des affiches */
+  width: 200px;
+  height: 300px;
   background-image: url(${props => props.$poster});
   background-size: cover;
   background-position: center;
@@ -66,10 +66,10 @@ const Poster = styled.div`
 
 const Title = styled.h2`
   color: white;
-  margin-bottom: 100px; /* Ajustez la marge pour remonter le titre */
+  margin-bottom: 100px;
   font-size: 2.4em;
   font-weight: 700;
-  text-transform: uppercase; 
+  text-transform: uppercase;
   letter-spacing: 1.5px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
   font-family: 'Poppins', sans-serif;
@@ -109,7 +109,7 @@ const PosterOverlay = styled.div`
   }
 `;
 
-const InfoButton = styled.button`
+const HeartButton = styled.button`
   position: absolute;
   top: 10px;
   right: 10px;
@@ -122,10 +122,17 @@ const InfoButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 1);
+    background: rgba(255, 0, 0, 0.7);
+    svg {
+      color: #ff0000;
+    }
+  }
+
+  &:active {
+    transform: scale(1.1);
   }
 
   svg {
@@ -135,27 +142,61 @@ const InfoButton = styled.button`
 `;
 
 const FeaturedMovies = () => {
+  const [films, setFilms] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('http://localhost:5001/api/films')
+      .then((response) => response.json())
+      .then((data) => setFilms(data.slice(0, 4)))
+      .catch((error) => console.error('Error fetching films:', error));
+  }, []);
+
+  const addToWatchlist = (filmId) => {
+    fetch('http://localhost:5001/api/watchlist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+      },
+      body: JSON.stringify({ film_id: filmId }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Film ajouté à la watchlist');
+        } else {
+          console.error('Erreur lors de l\'ajout du film à la watchlist');
+        }
+      })
+      .catch((error) => console.error('Erreur lors de l\'ajout du film à la watchlist:', error));
+  };
+
   const posters = [
-    { src: movieImage1, angle: -30, title: 'Film 1', description: 'Le 1 juin au cinéma' },
-    { src: movieImage2, angle: -10, title: 'Film 2', description: 'Le 2 juin au cinéma' },
-    { src: movieImage3, angle: 10, title: 'Film 3', description: 'Le 3 juin au cinéma' },
-    { src: movieImage4, angle: 30, title: 'Film 4', description: 'Le 4 juin au cinéma' },
+    { src: movieImage1, angle: -30, route: '/badboys' }, // Ajout de la route
+    { src: movieImage2, angle: -10, route: '/film2' },
+    { src: movieImage3, angle: 10, route: '/film3' },
+    { src: movieImage4, angle: 30, route: '/film4' },
   ];
 
   return (
     <Section $backgroundImage={backgroundImg}>
       <Title>Films Principaux</Title>
       <Gallery>
-        {posters.map((poster, index) => (
-          <Poster key={index} $poster={poster.src} $angle={poster.angle}>
+        {films.map((film, index) => (
+          <Poster
+            key={index}
+            $poster={posters[index].src}
+            $angle={posters[index].angle}
+            onClick={() => navigate(posters[index].route)} // Navigation lors du clic
+          >
             <PosterOverlay />
             <MovieDetails>
-              <h4>{poster.title}</h4>
-              <p>{poster.description}</p>
+              <h4>{film.titre}</h4>
+              <p>{film.date_sortie}</p>
             </MovieDetails>
-            <InfoButton>
-              <FaInfoCircle />
-            </InfoButton>
+            <HeartButton onClick={() => addToWatchlist(film.film_id)}>
+              <FaHeart />
+            </HeartButton>
           </Poster>
         ))}
       </Gallery>
