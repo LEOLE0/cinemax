@@ -1,14 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Navbar from '../components/Navbar'; // Assurez-vous que le chemin est correct
 import Footer from '../components/Footer'; // Assurez-vous que le chemin est correct
 import ReservationForm from '../components/ReservationForm';
+import { db } from '../firebase';
+import { collection, addDoc } from 'firebase/firestore';
+
+// Importer l'image et la vidéo
+import posterImage from '../assets/movie-img1.avif';
+import videoFile from '../assets/video.mp4';
 
 const Container = styled.div`
+margin-top: 80px;
+padding-top: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 150px;
+  padding: 20px;
   color: white;
   background: linear-gradient(to right, #002147, #004080);
   font-family: 'Poppins', sans-serif;
@@ -20,7 +28,7 @@ const ContentSection = styled.div`
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  margin-bottom: 90px;
+  margin-bottom: 20px;
   width: 100%;
 `;
 
@@ -104,45 +112,136 @@ const Video = styled.video`
   border-radius: 20px;
 `;
 
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalContainer = styled.div`
+  background: #333;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Label = styled.label`
+  margin-bottom: 5px;
+  color: #fff;
+`;
+
+const Input = styled.input`
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+`;
+
+const TextArea = styled.textarea`
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+`;
+
+const SubmitButton = styled.button`
+  background-color: orange;
+  border: none;
+  color: black;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #e6b800;
+  }
+`;
 
 const BadBoys = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', comment: '' });
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await addDoc(collection(db, 'comments'), formData);
+      closeModal();
+    } catch (err) {
+      console.error("Erreur lors de l'ajout du commentaire:", err);
+    }
+  };
+
   return (
     <>
       <Navbar />
       <Container>
         <ContentSection>
           <Poster>
-            <PosterImage
-              src={require('../assets/movie-img1.avif').default}
-              alt="BadBoys"
-            />
+            <PosterImage src={posterImage} alt="BadBoys" />
           </Poster>
           <Details>
             <NewBadge>Nouveau</NewBadge>
             <Title>Bad boys</Title>
             <Rating>👍 1,4K · 12+ · 1h46 · Action/Thriller</Rating>
             <ReleaseDate>Sortie : 03 juil. 2024</ReleaseDate>
-            <Cast>
-              Avec Jeanne Michel, Roschdy Zem, Laetitia Eido, de Florent-Emilio Siri
-            </Cast>
-            <Description>
-              Bad boys, ancien soldat des Forces Spéciales, solitaire et paranoïaque,
+            <Cast>Avec Jeanne Michel, Roschdy Zem, Laetitia Eido, de Florent-Emilio Siri</Cast>
+            <Description>Bad boys, ancien soldat des Forces Spéciales, solitaire et paranoïaque,
               devient garde du corps pour Nour, 13 ans et sa...
             </Description>
             <Actions>
               <ActionButton>➕ Ma liste</ActionButton>
-              <ActionButton>👍 Noter</ActionButton>
+              <ActionButton onClick={openModal}>👍 Noter</ActionButton>
             </Actions>
           </Details>
           <VideoContainer>
             <Video controls>
-              <source src={require('../assets/video.mp4').default} type="video/mp4" />
+              <source src={videoFile} type="video/mp4" />
               Votre navigateur ne supporte pas la balise vidéo.
             </Video>
           </VideoContainer>
         </ContentSection>
         <ReservationForm />
       </Container>
+      {isModalOpen && (
+        <ModalOverlay>
+          <ModalContainer>
+            <Form onSubmit={handleSubmit}>
+              <Label htmlFor="name">Nom</Label>
+              <Input id="name" name="name" type="text" value={formData.name} onChange={handleChange} />
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} />
+              <Label htmlFor="comment">Commentaire</Label>
+              <TextArea id="comment" name="comment" value={formData.comment} onChange={handleChange} />
+              <SubmitButton type="submit">Envoyer</SubmitButton>
+            </Form>
+            <button onClick={closeModal}>Fermer</button>
+          </ModalContainer>
+        </ModalOverlay>
+      )}
       <Footer />
     </>
   );

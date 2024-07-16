@@ -1,4 +1,3 @@
-// src/pages/Favorites.js
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Navbar from '../components/Navbar';
@@ -6,7 +5,6 @@ import Footer from '../components/Footer';
 import { getFavorites } from '../api'; // Assurez-vous d'avoir une fonction pour récupérer les favoris
 
 const PageContainer = styled.div`
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16,7 +14,6 @@ const PageContainer = styled.div`
 `;
 
 const FavoritesContainer = styled.div`
-
   width: 100vw;
   max-width: 1200px;
   height: 60vh;
@@ -76,9 +73,9 @@ const Favorites = () => {
       <h1>Mes Favoris</h1>
       <FavoritesContainer>
         {favorites.map((movie) => (
-          <MovieCard key={movie.id}>
+          <MovieCard key={movie.film_id}>
             <MovieImage src={movie.image} alt={movie.title} />
-            <MovieTitle>{movie.title}</MovieTitle>
+            <MovieTitle>{movie.titre}</MovieTitle>
             <p>Date de sortie : {movie.date_sortie}</p>
           </MovieCard>
         ))}
