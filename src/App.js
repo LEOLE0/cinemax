@@ -6,6 +6,9 @@ import Home4 from './Pages/Home4';
 import Home5 from './Pages/Home5';
 import Home6 from './Pages/Home6';
 import Home7 from './Pages/Home7';
+import GalleryPage from './Pages/GalleryPage';
+import MoviePage from './Pages/MoviePage';
+
 
 function App() {
   return (
@@ -17,6 +20,9 @@ function App() {
         <Route exact path="/home5" element={<Home5 />} />
         <Route exact path="/home6" element={<Home6 />} />
         <Route exact path="/home7" element={<Home7 />} />
+        <Route path="/GalleryPage" element={<GalleryPage />} />
+        <Route path="/movie/:id" element={<MoviePage />} />
+        
       </Routes>
     </Router>
   );
