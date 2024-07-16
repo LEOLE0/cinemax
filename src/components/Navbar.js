@@ -17,6 +17,11 @@ const NavbarContainer = styled.div`
   top: 0;
   left: 0;
   z-index: 1000;
+
+   @media (max-width: 438px) {
+    flex-direction: column;
+    width: 100vw;
+  }
 `;
 
 const Logo = styled.img`
@@ -37,6 +42,8 @@ const IconLink = styled(Link)`
     color: #3498db;
   }
 `;
+
+
 
 const Navbar = () => {
   const { user } = React.useContext(AuthContext);

@@ -71,6 +71,11 @@ const MovieGallery = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 85px;
+
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const MoviePoster = styled.div`

@@ -7,6 +7,10 @@ const BannerContainer = styled.div`
   position: relative;
   width: 100%;
   height: calc(100vh - 80px); /* Ajustez la hauteur selon la taille du header */
+@media (max-width: 768px) {
+    height: 300px;
+  }
+
 `;
 
 const BannerImage = styled.img`

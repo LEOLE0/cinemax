@@ -18,8 +18,8 @@ const fadeIn = keyframes`
 
 const BookingContainer = styled.div`
   position: absolute;
-  top: 60%; /* Ajustez cette valeur pour descendre un peu plus */
-  left: 50px; /* Ajustez cette valeur pour placer la section au bon endroit */
+  top: 60%;
+  left: 50px;
   transform: translateY(-50%);
   background-color: rgba(0, 0, 0, 0.85);
   padding: 20px 40px;
@@ -31,12 +31,32 @@ const BookingContainer = styled.div`
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   animation: ${fadeIn} 0.5s ease-in-out;
   backdrop-filter: blur(10px);
+
+  @media (max-width: 768px) {
+    width: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+  }
+
+  @media (max-width: 480px) {
+    width: 90%;
+    left: 50%;
+    transform: translate(-60%, -180%);
+    padding: 10px 20px;
+    z-index: 1000;
+  }
 `;
 
 const TopSection = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 15px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 
 const BookNowButton = styled.button`
@@ -56,12 +76,22 @@ const BookNowButton = styled.button`
     background-color: #e68900;
     transform: translateY(-2px);
   }
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
 `;
 
 const BottomSection = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 
 const Dropdown = styled.select`
@@ -69,6 +99,11 @@ const Dropdown = styled.select`
   border-radius: 5px;
   border: none;
   font-size: 18px;
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+    padding: 10px;
+  }
 `;
 
 const IconButton = styled.button`
@@ -87,6 +122,11 @@ const IconButton = styled.button`
   &:hover {
     background-color: #333;
     transform: translateY(-2px);
+  }
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+    padding: 10px;
   }
 `;
 
@@ -136,6 +176,11 @@ const CloseButton = styled.button`
   &:hover {
     background-color: #0056b3;
     transform: translateY(-2px);
+  }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+    padding: 6px 30px;
   }
 `;
 

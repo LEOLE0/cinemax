@@ -10,6 +10,11 @@ const FormContainer = styled.div`
   margin: 90px auto;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
+
+ @media (max-width: 768px) {
+    width: 90vw;
+  }
+
 `;
 
 const FormTitle = styled.h2`
@@ -68,12 +73,20 @@ const SelectCard = styled.div`
     background-color: #ff9900;
     color: #fff;
   }
+
+   @media (max-width: 768px) {
+    font-size: 8px;
+  }
 `;
 
 const TimeContainer = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+
+   @media (max-width: 768px) {
+    width: 75vw;
+  }
 `;
 
 const TimeCard = styled.div`
@@ -114,6 +127,9 @@ const SubmitButton = styled.button`
   &:hover {
     background-color: #ff9900;
     transform: translateY(-2px);
+  }
+     @media (max-width: 768px) {
+    width: 70vw;
   }
 `;
 

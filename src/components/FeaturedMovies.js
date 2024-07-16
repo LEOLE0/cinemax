@@ -31,6 +31,10 @@ const Section = styled.div`
   padding: 20px 0;
   font-family: 'Poppins', sans-serif;
   overflow: hidden;
+  @media (max-width: 768px) {
+  
+  }
+
 `;
 
 const Gallery = styled.div`

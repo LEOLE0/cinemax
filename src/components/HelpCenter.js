@@ -1,4 +1,3 @@
-// src/components/HelpCenter.js
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import AOS from 'aos';
@@ -27,6 +26,11 @@ const HelpCenterSection = styled.section`
   margin: 50px 20px;
   font-family: 'Poppins', sans-serif;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 30px;
+  }
 `;
 
 const LeftColumn = styled.div`
@@ -36,6 +40,11 @@ const LeftColumn = styled.div`
   align-items: flex-start;
   padding: 20px;
   animation: ${fadeIn} 1s ease-in-out;
+
+  @media (max-width: 768px) {
+    align-items: center;
+    text-align: center;
+  }
 `;
 
 const RightColumn = styled.div`
@@ -45,6 +54,10 @@ const RightColumn = styled.div`
   justify-content: space-between;
   padding: 20px;
   animation: ${fadeIn} 1.2s ease-in-out;
+
+  @media (max-width: 768px) {
+    margin-top: 20px;
+  }
 `;
 
 const IconWrapper = styled.div`
@@ -67,12 +80,28 @@ const Title = styled.h2`
   font-size: 2.5rem;
   color: white;
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const Subtitle = styled.p`
   font-size: 1.2rem;
   color: #ccc;
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+  }
 `;
 
 const HelpButton = styled.a`
@@ -95,6 +124,16 @@ const HelpButton = styled.a`
     transform: translateY(-3px);
     box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.5);
   }
+
+  @media (max-width: 768px) {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
 `;
 
 const FAQContainer = styled.div`
@@ -105,6 +144,14 @@ const FAQContainer = styled.div`
   animation: ${fadeIn} 1.6s ease-in-out;
   backdrop-filter: blur(10px);
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+  }
 `;
 
 const FAQItem = styled.div`
@@ -120,6 +167,14 @@ const FAQItem = styled.div`
   &:hover {
     background-color: rgba(255, 255, 255, 0.3);
   }
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 8px;
+  }
 `;
 
 const FAQQuestion = styled.div`
@@ -133,6 +188,14 @@ const FAQQuestion = styled.div`
   &:hover {
     color: #ff9800;
   }
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const FAQAnswer = styled.div`
@@ -142,6 +205,14 @@ const FAQAnswer = styled.div`
   line-height: 1.5;
   opacity: ${({ expanded }) => (expanded ? '1' : '0')};
   transition: opacity 0.3s ease;
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const HelpCenter = () => {
