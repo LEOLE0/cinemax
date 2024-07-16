@@ -1,4 +1,3 @@
-// Inscription.js
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -265,7 +264,7 @@ function Inscription() {
         <Label htmlFor="email">Email</Label>
         <InputGroup>
           <Icon><FaEnvelope /></Icon>
-          <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} required />
+          <Input id          ="email" name="email" type="email" value={formData.email} onChange={handleInputChange} required />
         </InputGroup>
 
         <Label htmlFor="password">Mot de passe</Label>
